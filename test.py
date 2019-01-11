@@ -51,6 +51,8 @@ else:
 # Map data into vocabulary
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(FLAGS.vocab_file)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
+x_test[1]
+
 
 print("\nTesting ...\n")
 
