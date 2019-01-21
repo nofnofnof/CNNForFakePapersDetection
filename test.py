@@ -14,14 +14,14 @@ import csv
 # ==================================================
 
 # Data Parameters
-tf.flags.DEFINE_string("human_data_file",  "D:/Projects/CNNForFakePapersDetection/Data/Human.txt", "Data source for the human data.")
-tf.flags.DEFINE_string("generator_data_file", "D:/Projects/CNNForFakePapersDetection/Data/Generator.txt", "Data source for the generator data.")
+tf.flags.DEFINE_string("data_file",  "D:/Projects/file_exmple.txt", "file for test .")
+tf.flags.DEFINE_string("new_file", "D:/Projects/test.txt", "new file for test.")
 
 # Eval Parameters
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_string("checkpoint_dir", "D:/Projects/CNNForFakePapersDetection/runs/1546535870/checkpoints", "Checkpoint directory from training run")
-tf.flags.DEFINE_string("vocab_file", "D:/Projects/CNNForFakePapersDetection/runs/1546535870/vocab", "vocabulary file from training run")
-# tf.flags.DEFINE_boolean("eval_train", False, "Evaluate on all training data")
+tf.flags.DEFINE_integer("batch_size", 1, "Batch Size (default: 64)")
+tf.flags.DEFINE_string("checkpoint_dir", "D:/Projects/CNNForFakePapersDetection/runs/1547237271/checkpoints", "Checkpoint directory from training run")
+tf.flags.DEFINE_string("vocab_file", "D:/Projects/CNNForFakePapersDetection/runs/1547237271/vocab", "vocabulary file from training run")
+
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -36,23 +36,20 @@ for attr, value in sorted(FLAGS.__flags.items()):
 print("")
 
 #  Load data from user
-def load_user_file() :
-    user_file = "D:/Projects/CNNForFakePapersDetection/file_exmple.txt"
+def load_user_file(user_file) :
+    text_file_output = text_handling.ConvertPdfFilesToText(user_file)
     return user_file
 
-if FLAGS.eval_train:
-    x_raw, y_test = text_handling.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
-    y_test = np.argmax(y_test, axis=1)
-else:
-    x_raw = ["a masterpiece four years in the making", "everything is off."]
-    y_test = [1, 0]
-
-
 # Map data into vocabulary
+#vocab_processor = learn.preprocessing.VocabularyProcessor.restore(FLAGS.vocab_file)
+#x_test = np.array(list(vocab_processor.transform(x_raw)))
+
+file_for_test = load_user_file(FLAGS.data_file)
+text_handling.prepare_for_test(file_for_test,FLAGS.new_file)
+x_raw = text_handling.load_data(FLAGS.new_file)
+x_raw = x_raw[0]
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(FLAGS.vocab_file)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
-x_test[1]
-
 
 print("\nTesting ...\n")
 
@@ -85,7 +82,7 @@ with graph.as_default():
 
         for x_test_batch in batches:
             batch_predictions = sess.run(predictions, {input_x: x_test_batch, dropout_keep_prob: 1.0})
-            all_predictions = np.concatenate([all_predictions, batch_predictions])
+            #all_predictions = np.concatenate([all_predictions, batch_predictions])
 
 
 
